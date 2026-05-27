@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>ころんのワンタッチ美白ツール（保存機能付き）</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding: 20px; background: #faf5f7; }
+        .container { max-width: 500px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        #preview { max-width: 100%; margin-top: 20px; border-radius: 8px; display: none; }
+        .btn-group { margin-top: 15px; }
+        button { padding: 12px 24px; font-size: 16px; font-weight: bold; cursor: pointer; border: none; border-radius: 5px; margin: 5px; display: none; }
+        #filterBtn { background: #e0e0e0; color: #333; }
+        #saveBtn { background: #ff69b4; color: white; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>✨ ワンタッチ美白＆保存ツール ✨</h2>
+    
+    <input type="file" id="imageInput" accept="image/*">
+    
+    <br><img id="preview" alt="プレビュー">
+    
+    <div class="btn-group">
+        <button id="filterBtn">ころんスペシャル美白</button>
+        <button id="saveBtn">💾 綺麗になった写真を保存</button>
+    </div>
+</div>
+
+<script>
+    const imageInput = document.getElementById('imageInput');
+    const preview = document.getElementById('preview');
+    const filterBtn = document.getElementById('filterBtn');
+    const saveBtn = document.getElementById('saveBtn');
+
+    let originalImage = new Image(); // 魔法の計算用に、元の画像を記憶する箱
+
+    // ■ 写真が選ばれた時の動き
+    imageInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                preview.src = event.target.result;
+                preview.style.display = 'block';
+                
+                // CSSフィルターを一度リセット
+                preview.style.filter = "none";
+                
+                // 保存の計算で使うために、画像データを仕込んでおく
+                originalImage.src = event.target.result;
+                
+                // ボタンを表示（保存ボタンは加工後に押してほしいので、まだ隠す）
+                filterBtn.style.display = 'inline-block';
+                filterBtn.innerText = "ころんスペシャル美白";
+                filterBtn.style.background = "#e0e0e0";
+                filterBtn.style.color = "#333";
+                saveBtn.style.display = 'none';
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // ■ 「美白ボタン」を押した時の動き
+    filterBtn.addEventListener('click', function() {
+        // 画面上の見た目を派手に変更！
+        preview.style.filter = "brightness(1.5) contrast(1.2) saturate(0.8) sepia(0.1)";
+        
+        filterBtn.innerText = "✨ 爆速爆白完了！ ✨";
+        filterBtn.style.background = "#4caf50";
+        filterBtn.style.color = "white";
+        
+        // 加工が終わったので、ここで「保存ボタン」を登場させる！
+        saveBtn.style.display = 'inline-block';
+    });
+
+    // ■ 「保存ボタン」を押した時の動き（★ここが新しい魔法！）
+    saveBtn.addEventListener('click', function() {
+        // 1. ブラウザの裏のメモリに「見えないお絵かきキャンバス」を作る
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // キャンバスのサイズを元の写真とぴったり同じにする
+        canvas.width = originalImage.naturalWidth;
+        canvas.height = originalImage.naturalHeight;
+        
+        // 2. キャンバスの「お絵かき設定」に、さっきと同じ美白フィルターをかける
+        ctx.filter = "brightness(1.5) contrast(1.2) saturate(0.8) sepia(0.1)";
+        
+        // 3. キャンバスに元の写真を描く（これでフィルターが写真に焼き付けられる！）
+        ctx.drawImage(originalImage, 0, 0);
+        
+        // 4. キャンバスから、加工後の新しい写真のデータ（URL）を取り出す
+        const filteredImageUrl = canvas.toDataURL('image/jpeg');
+        
+        // 5. 裏でこっそり「ダウンロード用のリンク」を作って、自動でクリックさせる
+        const downloadLink = document.createElement('a');
+        downloadLink.download = 'koron_bihaku_' + Date.now() + '.jpg'; // 保存するファイル名
+        downloadLink.href = filteredImageUrl;
+        downloadLink.click(); // JavaScriptが代わりにクリック！
+    });
+</script>
+
+</body>
+</html>
