@@ -2,105 +2,261 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>ころんのワンタッチ美白ツール（保存機能付き）</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✨ ワンタッチ美白ツール ✨</title>
+
     <style>
-        body { font-family: sans-serif; text-align: center; padding: 20px; background: #faf5f7; }
-        .container { max-width: 500px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        #preview { max-width: 100%; margin-top: 20px; border-radius: 8px; display: none; }
-        .btn-group { margin-top: 15px; }
-        button { padding: 12px 24px; font-size: 16px; font-weight: bold; cursor: pointer; border: none; border-radius: 5px; margin: 5px; display: none; }
-        #filterBtn { background: #e0e0e0; color: #333; }
-        #saveBtn { background: #ff69b4; color: white; }
+        body {
+            font-family: sans-serif;
+            text-align: center;
+            padding: 20px;
+            background: #faf5f7;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        #preview {
+            max-width: 100%;
+            margin-top: 20px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .btn-group {
+            margin-top: 20px;
+        }
+
+        button {
+            width: 90%;
+            max-width: 300px;
+
+            padding: 12px 24px;
+            margin: 6px;
+
+            font-size: 16px;
+            font-weight: bold;
+
+            border: none;
+            border-radius: 8px;
+
+            cursor: pointer;
+            display: none;
+
+            transition: all 0.2s ease;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            opacity: 0.9;
+        }
+
+        #filterBtn {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        #instagramBtn {
+            background: #833ab4;
+            color: white;
+        }
+
+        #saveBtn {
+            background: #ff69b4;
+            color: white;
+        }
     </style>
 </head>
+
 <body>
 
-<div class="container">
-    <h2>✨ ワンタッチ美白＆保存ツール ✨</h2>
-    
-    <input type="file" id="imageInput" accept="image/*">
-    
-    <br><img id="preview" alt="プレビュー">
-    
-    <div class="btn-group">
-        <button id="filterBtn">ころんスペシャル美白</button>
-        <button id="saveBtn">💾 綺麗になった写真を保存</button>
+    <div class="container">
+
+        <h2>✨ ワンタッチ美白＆保存ツール ✨</h2>
+
+        <input type="file" id="imageInput" accept="image/*">
+
+        <br>
+
+        <img id="preview" alt="プレビュー">
+
+        <div class="btn-group">
+            <button id="filterBtn">
+                ✨ スペシャル美白
+            </button>
+
+            <button id="instagramBtn">
+                📸 Instagramモード
+            </button>
+
+            <button id="saveBtn">
+                💾 写真を保存
+            </button>
+        </div>
+
     </div>
-</div>
 
-<script>
-    const imageInput = document.getElementById('imageInput');
-    const preview = document.getElementById('preview');
-    const filterBtn = document.getElementById('filterBtn');
-    const saveBtn = document.getElementById('saveBtn');
+    <script>
 
-    let originalImage = new Image(); // 魔法の計算用に、元の画像を記憶する箱
+        // =========================
+        // 要素を取得
+        // =========================
 
-    // ■ 写真が選ばれた時の動き
-    imageInput.addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
+        const imageInput = document.getElementById('imageInput');
+        const preview = document.getElementById('preview');
+
+        const filterBtn = document.getElementById('filterBtn');
+        const instagramBtn = document.getElementById('instagramBtn');
+        const saveBtn = document.getElementById('saveBtn');
+
+
+        // =========================
+        // 画像保存用
+        // =========================
+
+        let originalImage = new Image();
+        let currentFilter = "none";
+
+
+        // =========================
+        // 画像読み込み
+        // =========================
+
+        imageInput.addEventListener('change', function (e) {
+
+            const file = e.target.files[0];
+
+            if (!file) return;
+
             const reader = new FileReader();
-            reader.onload = function(event) {
+
+            reader.onload = function (event) {
+
+                // プレビュー表示
                 preview.src = event.target.result;
                 preview.style.display = 'block';
-                
-                // CSSフィルターを一度リセット
-                preview.style.filter = "none";
-                
-                // 保存の計算で使うために、画像データを仕込んでおく
+
+                // 元画像を保存
                 originalImage.src = event.target.result;
-                
-                // ボタンを表示（保存ボタンは加工後に押してほしいので、まだ隠す）
+
+                // フィルター初期化
+                currentFilter = "none";
+                preview.style.filter = currentFilter;
+
+                // ボタン表示
                 filterBtn.style.display = 'inline-block';
-                filterBtn.innerText = "ころんスペシャル美白";
-                filterBtn.style.background = "#e0e0e0";
-                filterBtn.style.color = "#333";
+                instagramBtn.style.display = 'inline-block';
+
+                // 保存ボタンはまだ隠す
                 saveBtn.style.display = 'none';
-            }
+
+                // ボタン状態リセット
+                resetButtons();
+            };
+
             reader.readAsDataURL(file);
+        });
+
+
+        // =========================
+        // 美白モード
+        // =========================
+
+        filterBtn.addEventListener('click', function () {
+
+            currentFilter =
+                "brightness(1.5) contrast(1.2) saturate(0.8) sepia(0.1)";
+
+            preview.style.filter = currentFilter;
+
+            filterBtn.innerText = "✨ 爆速爆白完了！";
+            filterBtn.style.background = "#4caf50";
+            filterBtn.style.color = "white";
+
+            saveBtn.style.display = 'inline-block';
+        });
+
+
+        // =========================
+        // Instagramモード
+        // =========================
+
+        instagramBtn.addEventListener('click', function () {
+
+            currentFilter =
+                "brightness(1.1) contrast(1.15) saturate(1.3) sepia(0.15)";
+
+            preview.style.filter = currentFilter;
+
+            instagramBtn.innerText = "📸 インスタ映え中！";
+            instagramBtn.style.background = "#e1306c";
+
+            saveBtn.style.display = 'inline-block';
+        });
+
+
+        // =========================
+        // 保存
+        // =========================
+
+        saveBtn.addEventListener('click', function () {
+
+            // キャンバス作成
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            // 元画像サイズ
+            canvas.width = originalImage.naturalWidth;
+            canvas.height = originalImage.naturalHeight;
+
+            // フィルター適用
+            ctx.filter = currentFilter;
+
+            // 画像描画
+            ctx.drawImage(originalImage, 0, 0);
+
+            // 保存データ作成
+            const filteredImageUrl =
+                canvas.toDataURL('image/jpeg');
+
+            // ダウンロード
+            const downloadLink = document.createElement('a');
+
+            downloadLink.download =
+                'koron_filter_' + Date.now() + '.jpg';
+
+            downloadLink.href = filteredImageUrl;
+
+            downloadLink.click();
+        });
+
+
+        // =========================
+        // ボタン状態リセット
+        // =========================
+
+        function resetButtons() {
+
+            filterBtn.innerText = "✨ スペシャル美白";
+            filterBtn.style.background = "#e0e0e0";
+            filterBtn.style.color = "#333";
+
+            instagramBtn.innerText = "📸 Instagramモード";
+            instagramBtn.style.background = "#833ab4";
+            instagramBtn.style.color = "white";
         }
-    });
 
-    // ■ 「美白ボタン」を押した時の動き
-    filterBtn.addEventListener('click', function() {
-        // 画面上の見た目を派手に変更！
-        preview.style.filter = "brightness(1.5) contrast(1.2) saturate(0.8) sepia(0.1)";
-        
-        filterBtn.innerText = "✨ 爆速爆白完了！ ✨";
-        filterBtn.style.background = "#4caf50";
-        filterBtn.style.color = "white";
-        
-        // 加工が終わったので、ここで「保存ボタン」を登場させる！
-        saveBtn.style.display = 'inline-block';
-    });
-
-    // ■ 「保存ボタン」を押した時の動き（★ここが新しい魔法！）
-    saveBtn.addEventListener('click', function() {
-        // 1. ブラウザの裏のメモリに「見えないお絵かきキャンバス」を作る
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        
-        // キャンバスのサイズを元の写真とぴったり同じにする
-        canvas.width = originalImage.naturalWidth;
-        canvas.height = originalImage.naturalHeight;
-        
-        // 2. キャンバスの「お絵かき設定」に、さっきと同じ美白フィルターをかける
-        ctx.filter = "brightness(1.5) contrast(1.2) saturate(0.8) sepia(0.1)";
-        
-        // 3. キャンバスに元の写真を描く（これでフィルターが写真に焼き付けられる！）
-        ctx.drawImage(originalImage, 0, 0);
-        
-        // 4. キャンバスから、加工後の新しい写真のデータ（URL）を取り出す
-        const filteredImageUrl = canvas.toDataURL('image/jpeg');
-        
-        // 5. 裏でこっそり「ダウンロード用のリンク」を作って、自動でクリックさせる
-        const downloadLink = document.createElement('a');
-        downloadLink.download = 'koron_bihaku_' + Date.now() + '.jpg'; // 保存するファイル名
-        downloadLink.href = filteredImageUrl;
-        downloadLink.click(); // JavaScriptが代わりにクリック！
-    });
-</script>
+    </script>
 
 </body>
 </html>
