@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>✨ ワンタッチ美白ツール ✨</title>
+    <title>✨ LumiGazer+ ✨</title>
 
     <style>
         body {
@@ -22,9 +22,17 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
 
-        h2 {
-            margin-bottom: 20px;
-        }
+       h2 {
+    margin-bottom: 5px;
+    font-size: 32px;
+    }
+
+    .tagline {
+    color: #777;
+    font-size: 14px;
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+    }
 
         #preview {
             max-width: 100%;
@@ -81,18 +89,18 @@
 <body>
 
     <div class="container">
+        <h2>✨ LumiGazer+ ✨</h2>
+        <p class="tagline">Find the light. Shape the mood.</p>
 
-        <h2>✨ ワンタッチ美白＆保存ツール ✨</h2>
 
         <input type="file" id="imageInput" accept="image/*">
-
         <br>
 
         <img id="preview" alt="プレビュー">
 
         <div class="btn-group">
             <button id="filterBtn">
-                ✨ スペシャル美白
+                ✨ 美白モード
             </button>
 
             <button id="instagramBtn">
@@ -175,11 +183,11 @@
         filterBtn.addEventListener('click', function () {
 
             currentFilter =
-                "brightness(1.5) contrast(1.2) saturate(0.8) sepia(0.1)";
-
+            // "brightness(1.5) contrast(1.2) saturate(0.8) sepia(0.1)";
+             "brightness(1.5) contrast(1.0) saturate(0.8) sepia(0.1)";
             preview.style.filter = currentFilter;
 
-            filterBtn.innerText = "✨ 爆速爆白完了！";
+            filterBtn.innerText = "✨ 爆白完了！";
             filterBtn.style.background = "#4caf50";
             filterBtn.style.color = "white";
 
@@ -198,7 +206,7 @@
 
             preview.style.filter = currentFilter;
 
-            instagramBtn.innerText = "📸 インスタ映え中！";
+            instagramBtn.innerText = "📸 インスタ映え完了！";
             instagramBtn.style.background = "#e1306c";
 
             saveBtn.style.display = 'inline-block';
@@ -247,7 +255,7 @@
 
         function resetButtons() {
 
-            filterBtn.innerText = "✨ スペシャル美白";
+            filterBtn.innerText = "✨ 美白モード";
             filterBtn.style.background = "#e0e0e0";
             filterBtn.style.color = "#333";
 
