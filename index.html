@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LumiGazer+</title>
+    <title>✨LumiGazer+✨</title>
 
     <style>
         body {
@@ -22,14 +22,15 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
 
-       h2 {
+h2 {
     margin-bottom: 5px;
-    font-size: 32px;
-    }
+    font-size: clamp(24px, 5vw, 32px);
+    white-space: nowrap;
+}
 
     .tagline {
     color: #777;
-    font-size: 14px;
+    font-size: 13px;
     margin-bottom: 20px;
     letter-spacing: 1px;
     }
@@ -46,8 +47,8 @@
         }
 
         button {
-            width: 90%;
-            max-width: 300px;
+            width: 100%;
+            max-width: 320px;
 
             padding: 12px 24px;
             margin: 6px;
@@ -69,13 +70,20 @@
             opacity: 0.9;
         }
 
+
+
+        #beautyBtn {
+           background: #64b5f6;
+           color: white;
+        }
+
         #filterBtn {
-            background: #e0e0e0;
-            color: #333;
+            background: #90caf9;
+            color: white;
         }
 
         #instagramBtn {
-            background: #833ab4;
+            background: #c29eda;
             color: white;
         }
 
@@ -83,13 +91,18 @@
             background: #ff69b4;
             color: white;
         }
+ 
+        #resetBtn {
+    background: #9e9e9e;
+    color: white;
+}
     </style>
 </head>
 
 <body>
 
     <div class="container">
-        <h2>LumiGazer+</h2>
+        <h2>✨ LumiGazer+ ✨</h2>
         <p class="tagline">Find the light. Shape the mood.</p>
 
 
@@ -99,20 +112,18 @@
         <img id="preview" alt="プレビュー">
 
         <div class="btn-group">
-            <button id="filterBtn">
-                ✨ 美白モード
-            </button>
-
-            <button id="instagramBtn">
-                📸 Instagramモード
-            </button>
-
-            <button id="saveBtn">
-                💾 写真を保存
-            </button>
+            <button id="beautyBtn">💎 Beauty</button>
+            <button id="filterBtn">✨ White</button>
+            <button id="instagramBtn">📸 Instagram</button>
+            <button id="resetBtn">↩ Original</button>
+            <button id="saveBtn">💾 写真を保存</button>
         </div>
 
     </div>
+
+
+
+
 
     <script>
 
@@ -125,8 +136,9 @@
 
         const filterBtn = document.getElementById('filterBtn');
         const instagramBtn = document.getElementById('instagramBtn');
+        const beautyBtn = document.getElementById('beautyBtn');
         const saveBtn = document.getElementById('saveBtn');
-
+        const resetBtn = document.getElementById('resetBtn');
 
         // =========================
         // 画像保存用
@@ -154,6 +166,11 @@
                 preview.src = event.target.result;
                 preview.style.display = 'block';
 
+                // 自動でプレビューまでスクロール
+                preview.scrollIntoView({
+                behavior: "smooth"
+                });
+
                 // 元画像を保存
                 originalImage.src = event.target.result;
 
@@ -163,31 +180,59 @@
 
                 // ボタン表示
                 filterBtn.style.display = 'inline-block';
-                instagramBtn.style.display = 'inline-block';
+                instagramBtn.style.display = 'inline-block';    
+                beautyBtn.style.display = 'inline-block';
+                resetBtn.style.display = 'inline-block';
 
                 // 保存ボタンはまだ隠す
                 saveBtn.style.display = 'none';
 
                 // ボタン状態リセット
                 resetButtons();
+
+                // 初期状態はOriginal
+                resetBtn.innerText = "↩ Original ✓";
+                resetBtn.style.background = "#757575";
+
             };
 
             reader.readAsDataURL(file);
         });
 
+// =========================
+// Beautyモード
+// =========================
 
-        // =========================
-        // 美白モード
-        // =========================
+beautyBtn.addEventListener('click', function() {
+
+    resetButtons();
+
+    currentFilter =
+       "brightness(1.15) contrast(0.95) saturate(1.05) blur(0.2px)";
+
+    preview.style.filter = currentFilter;
+
+    beautyBtn.innerText = "💎 Beauty ✓";
+    beautyBtn.style.background = "#42a5f5";
+    beautyBtn.style.color = "white";
+    saveBtn.style.display = 'inline-block';
+
+});
+
+ // =========================
+// 美白モード
+// =========================
 
         filterBtn.addEventListener('click', function () {
 
+            resetButtons();
+
             currentFilter =
-            // "brightness(1.5) contrast(1.2) saturate(0.8) sepia(0.1)";
-             "brightness(1.5) contrast(1.0) saturate(0.8) sepia(0.1)";
+            "brightness(1.5) contrast(1.05) saturate(1.05) sepia(0.15) blur(0.3px)";
+
             preview.style.filter = currentFilter;
 
-            filterBtn.innerText = "✨ 爆白完了！";
+            filterBtn.innerText = "✨ White ✓";
             filterBtn.style.background = "#4caf50";
             filterBtn.style.color = "white";
 
@@ -195,22 +240,26 @@
         });
 
 
-        // =========================
-        // Instagramモード
-        // =========================
+// =========================
+// Instagramモード
+// =========================
 
-        instagramBtn.addEventListener('click', function () {
+    instagramBtn.addEventListener('click', function () {
+    
+        resetButtons();
 
-            currentFilter =
-                "brightness(1.1) contrast(1.15) saturate(1.3) sepia(0.15)";
+        currentFilter =
+       "brightness(1.1) contrast(1.15) saturate(1.3) sepia(0.15)";
 
-            preview.style.filter = currentFilter;
+        preview.style.filter = currentFilter;
 
-            instagramBtn.innerText = "📸 インスタ映え完了！";
-            instagramBtn.style.background = "#e1306c";
+        instagramBtn.innerText = "📸 Instagram ✓";
+        instagramBtn.style.background = "#e1306c";
+        instagramBtn.style.color = "white";
 
-            saveBtn.style.display = 'inline-block';
-        });
+        saveBtn.style.display = 'inline-block';
+
+    });
 
 
         // =========================
@@ -224,47 +273,107 @@
             const ctx = canvas.getContext('2d');
 
             // 元画像サイズ
-            canvas.width = originalImage.naturalWidth;
-            canvas.height = originalImage.naturalHeight;
+            //canvas.width = originalImage.naturalWidth;
+            //canvas.height = originalImage.naturalHeight;
+
+const maxSize = 1600;
+
+let width = originalImage.naturalWidth;
+let height = originalImage.naturalHeight;
+
+if (width > height) {
+
+    if (width > maxSize) {
+        height = height * (maxSize / width);
+        width = maxSize;
+    }
+
+} else {
+
+    if (height > maxSize) {
+        width = width * (maxSize / height);
+        height = maxSize;
+    }
+}
+
+canvas.width = width;
+canvas.height = height;
+
 
             // フィルター適用
             ctx.filter = currentFilter;
 
             // 画像描画
-            ctx.drawImage(originalImage, 0, 0);
+ctx.drawImage(
+    originalImage,
+    0,
+    0,
+    width,
+    height
+);
 
-            // 保存データ作成
-            const filteredImageUrl =
-                canvas.toDataURL('image/jpeg');
+// 保存データ作成（品質90%）
+
+const filteredImageUrl =
+    canvas.toDataURL('image/jpeg', 0.9);
 
             // ダウンロード
             const downloadLink = document.createElement('a');
 
             downloadLink.download =
-                'koron_filter_' + Date.now() + '.jpg';
+                'LumiGazer_' + Date.now() + '.jpg';
 
             downloadLink.href = filteredImageUrl;
 
             downloadLink.click();
+
+
+alert("✨ Saved!");
+
         });
 
 
-        // =========================
-        // ボタン状態リセット
-        // =========================
+// =========================
+// Originalボタンの処理
+// =========================
+resetBtn.addEventListener('click', function () {
 
-        function resetButtons() {
+    currentFilter = "none";
+    preview.style.filter = "none";
 
-            filterBtn.innerText = "✨ 美白モード";
-            filterBtn.style.background = "#e0e0e0";
-            filterBtn.style.color = "#333";
+    resetButtons();
 
-            instagramBtn.innerText = "📸 Instagramモード";
-            instagramBtn.style.background = "#833ab4";
-            instagramBtn.style.color = "white";
-        }
+    resetBtn.innerText = "↩ Original ✓";
+    resetBtn.style.background = "#757575";
 
-    </script>
+saveBtn.style.display = 'inline-block';
+
+});
+
+// =========================
+// ボタン状態リセット
+// =========================
+function resetButtons() {
+
+    beautyBtn.innerText = "💎 Beauty";
+    beautyBtn.style.background = "#64b5f6";
+    beautyBtn.style.color = "white";
+
+    filterBtn.innerText = "✨ White";
+    filterBtn.style.background = "#90caf9";
+    filterBtn.style.color = "white";
+
+    instagramBtn.innerText = "📸 Instagram";
+    instagramBtn.style.background = "#833ab4";
+    instagramBtn.style.color = "white";
+
+    resetBtn.innerText = "↩ Original";
+    resetBtn.style.background = "#9e9e9e";
+    resetBtn.style.color = "white";
+}
+
+
+</script>
 
 </body>
 </html>
